@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="1024" height="10" tilewidth="32" tileheight="32" nextobjectid="1">
+ <imagelayer name="bkg">
+  <image source="img/splash_logo.png"/>
+  <properties>
+   <property name="atlas" value="intro"/>
+  </properties>
+ </imagelayer>
+</map>

@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="1024" height="10" tilewidth="32" tileheight="32" nextobjectid="2">
+ <imagelayer name="bkg">
+  <image source="img/home.jpg"/>
+  <properties>
+   <property name="atlas" value="intro"/>
+  </properties>
+ </imagelayer>
+ <imagelayer name="play" x="144" y="150">
+  <image source="img/play.png"/>
+ </imagelayer>
+ <objectgroup name="objects">
+  <object id="1" name="play" x="150.4" y="153.6" width="60.8" height="25.6">
+   <properties>
+    <property name="fulldesc" value="Start a new game"/>
+    <property name="moveto" value="hall"/>
+    <property name="overlay" value="img/play.png"/>
+   </properties>
+  </object>
+ </objectgroup>
+</map>

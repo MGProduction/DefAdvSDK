@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="left-down" width="1024" height="10" tilewidth="32" tileheight="32" nextobjectid="51">
+ <imagelayer name="bkg" x="10" y="6">
+  <image source="img/room1.png"/>
+ </imagelayer>
+ <imagelayer name="_" x="144" y="61">
+  <image source="img/frame.png"/>
+ </imagelayer>
+ <objectgroup name="movearea">
+  <object id="26" name="walkarea" x="0" y="185.6" width="457.6" height="6.4"/>
+ </objectgroup>
+ <objectgroup name="objects">
+  <object id="37" name="door" x="0" y="92.8" width="35.2" height="99.2">
+   <properties>
+    <property name="moveto" value="hall"/>
+   </properties>
+  </object>
+  <object id="38" name="left library" x="41.6" y="41.6" width="83.2" height="144"/>
+  <object id="40" name="desk" x="182.4" y="137.6" width="108.8" height="9.6"/>
+  <object id="41" name="right_library" x="355.2" y="41.6" width="80" height="140.8"/>
+  <object id="43" name="left_drawer" x="188.8" y="147.2" width="44.8" height="12.8"/>
+  <object id="45" name="right_drawer" x="240" y="147.2" width="41.6" height="12.8"/>
+  <object id="50" name="left_frame" x="147.2" y="64" width="44.8" height="51.2">
+   <properties>
+    <property name="overlay" value="img/frame.png"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup name="actors">
+  <object id="23" name="player" x="9.6" y="185.6"/>
+ </objectgroup>
+</map>

@@ -1,0 +1,295 @@
+{
+	"general":[{
+			"gamename":"DefAdvSDK",
+			"height":"200",
+			"inventorysize":"2",
+			"inventoryblankicon":"icon5"
+	}],
+	"config":[{
+			"starting":"splash",
+			"baseinventory":"_",
+			"playas":"me"
+	}],
+	"debugconfig":[{
+			"starting":"splash",
+			"baseset":"_",
+			"baseinventory":"",
+			"playas":"me"
+	}],
+	"actors":[{
+		"me":[{
+			"desc":"me",
+			"name":"me",
+			"fulldesc":"It's me, that's all",
+			"anim":[
+				{"idle":"hitman3,hitman4"},
+				{"idle.front":"hitman1,hitman2"},
+				{"idle.back":"hitman9,hitman10"},
+				{"walk":"hitman5,hitman6,hitman7,hitman8"},
+				{"run":"hitman5,hitman6,hitman7,hitman8"},
+				{"shoot":"hitman13,hitman14,hitman15,hitman16"},
+				{"sitting":"hitman11"},
+				{"shadow":"heroshadow"}
+			],
+			"talkto":[
+				{"say":"Uh?"}
+			],
+			"lookat":[
+				{"say":"It's me, that's all"}
+			]
+		}]
+	}],
+	"objects":[{
+		"note":[{
+			"desc":"note",
+			"usewith":"yes",
+			"icon":"icon_note",
+			"fulldesc":"It's a piece of paper with some numbers on it: 1234",
+			"usewith_all":[
+				{"say":"I don't think to understand your request, sorry"}
+			]
+		}],
+		"key":[{
+			"desc":"key",
+			"usewith":"yes",
+			"icon":"icon_key",
+			"fulldesc":"It's a key",
+			"usewith_all":[
+				{"say":"Not sure about that, sorry"}
+			]
+		}]
+	}],
+	"splash":[{
+		"_":[{
+			"onfirst":[
+				{"setanim":"sitting"},
+				{"wait":"1500"},
+				{"loadroom":"home"}
+			]
+		}]
+	}],
+	"home":[{
+		"play":[{
+			"click":[
+				{"loadroom":"intro"}
+			]
+		}]
+	}],
+	"hall":[{
+		"_":[{
+			"onfirst":[
+				{"setpos":"-32,185"},
+				{"moveto":"45,185"},
+				{"say":"Welcome! This is a short demo of a preliminary version of DefAdvSDK"},
+				{"say":"A simple Adventure Game SDK for Defold, made by Marco Giorgini"},
+				{"say":"Fell free to move around and try to interact with the few objects/locations in this demo"}
+			]
+		}],
+		"_from":[{
+			"room1":[
+				{"setpos":"163,185"}
+			],
+			"room2":[
+				{"setpos":"456,185"}
+			]
+		}],
+		"left_door":[{
+			"lookat":[
+				{"say":"It's just a door, leading to room 1. It's unlocked"}
+			],
+			"use":[
+				{"say":"It's not locked. Just walk in to enter room 1"}
+			]
+		}],
+		"left_frame":[{
+			"lookat":[
+				{"say":"It's an empty frame. Marco has been lazy about this"}
+			],
+			"use":[
+				{"say":"This frame is useless. But keep on checking"}
+			]
+		}],
+		"safe":[{
+			"lookat":[
+				{"say":"It's a little safe, with a numeric keypad"}
+			],
+			"use":[
+				{"say":"Without the combination it would take forever to open it"}
+			],
+			"usewith_note":[
+				{"ifnotset":"safeunlocked"},
+					{"say":"Ok, let's try these numbers"},
+					{"say":"1... 2... 3... 4..."},
+					{"say":"Cool! The safe's now unlocked"},
+					{"set":"safeunlocked"},
+					{"say":"You found nothing inside, but you've been great to unlock it"},
+				{"else":""},
+					{"say":"Safe is already unlocked. Don't need the note anymore"},
+				{"endif":""}
+			],
+			"usewith_key":[
+				{"say":"This key cannot unlock this safe. You need the combination"}
+			]
+		}],
+		"right_frame":[{
+			"lookat":[
+				{"say":"It's an empty frame. Marco has been lazy about this"}
+			],
+			"use":[
+				{"say":"There's something behind it"},
+				{"hideobj":"right_frame"},
+				{"showobj":"safe"},
+				{"showobj":"moved_frame"}
+			]
+		}],
+		"moved_frame":[{
+			"use":[
+				{"say":"Ok, let's put it on the wall again"},
+				{"hideobj":"moved_frame"},
+				{"hideobj":"safe"},
+				{"showobj":"right_frame"}
+			]
+		}],
+		"right_door":[{
+			"use":[
+				{"ifhave":"key"},
+					{"ifnotset":"doorunlocked"},
+						{"say":"You should use the key and unlock the door"},
+					{"else":""},
+						{"say":"Door's unlocked. Don't need to open it again with the key"},
+					{"endif":""},
+				{"else":""},
+					{"say":"You cannot unlock it without a key"},
+				{"endif":""}
+			],
+			"usewith_key":[
+				{"ifhave":"key"},
+					{"ifnotset":"doorunlocked"},
+						{"say":"Ok, you use the key and unlock the door"},
+						{"set":"doorunlocked"},
+					{"else":""},
+						{"say":"Door's unlocked. Don't need to open it again with the key"},
+					{"endif":""},
+				{"else":""},
+					{"say":"You cannot unlock it without a key"},
+				{"endif":""}
+			],
+			"lookat":[
+				{"say":"It's just a door, leading to room 2"}
+			],
+			"moveto":[
+				{"ifnotset":"doorunlocked"},
+					{"say":"Door's locked"},
+				{"else":""},
+					{"loadroom":"room2"},
+				{"endif":""}
+			]
+		}]
+	}],
+	"room1":[{
+		"_":[{
+			"onfirst":[
+				{"setpos":"-32,185"},
+				{"moveto":"45,185"},
+				{"say":"This is room1"},
+				{"say":"In this room you can find a couple of objects"},
+				{"say":"Look around and use elements to find and get them"}
+			]
+		}],
+		"_from":[{
+			"hall":[
+				{"setpos":"-32,185"},
+				{"moveto":"45,185"}
+			]
+		}],
+		"left_library":[{
+			"lookat":[
+				{"say":"It's a big library, full of fake books"}
+			],
+			"use":[
+				{"say":"There's nothing you can do with this element"}
+			]
+		}],
+		"right_library":[{
+			"lookat":[
+				{"say":"It's a big library, full of fake books"}
+			],
+			"use":[
+				{"say":"There's nothing you can do with this element"}
+			]
+		}],
+		"left_frame":[{
+			"lookat":[
+				{"say":"It's an empty frame. Marco has been lazy about this"}
+			],
+			"use":[
+				{"say":"This frame is useless. But keep on checking"}
+			]
+		}],
+		"desk":[{
+			"lookat":[
+				{"say":"It's a desk with two drawers"}
+			],
+			"use":[
+				{"say":"You cannot move it. But maybe you can check its drawers"}
+			]
+		}],
+		"left_drawer":[{
+			"lookat":[
+				{"say":"It's closed"}
+			],
+			"use":[
+				{"say":"You open it and check inside"},
+				{"ifdonthave":"note"},
+					{"say":"You find a note with some numbers: 1234"},
+					{"say":"Cool"},
+					{"take":"note"},
+					{"say":"Taken"},
+				{"else":""},
+					{"say":"It's empty"},
+				{"endif":""}
+			]
+		}],
+		"right_drawer":[{
+			"lookat":[
+				{"say":"It's closed"}
+			],
+			"use":[
+				{"say":"You open it and check inside"},
+				{"ifdonthave":"key"},
+					{"say":"You find a key"},
+					{"say":"Cool!"},
+					{"take":"key"},
+					{"say":"Taken"},
+				{"else":""},
+					{"say":"It's empty"},
+				{"endif":""}
+			]
+		}]
+	}],
+	"room2":[{
+		"_":[{
+			"onfirst":[
+				{"setpos":"-32,185"},
+				{"moveto":"45,185"},
+				{"say":"This is room2"},
+				{"say":"There's nothing to do here, actually"},
+				{"say":"But you've been great to find the key and use it to enter here"}
+			]
+		}],
+		"_from":[{
+			"hall":[
+				{"setpos":"-32,185"},
+				{"moveto":"45,185"}
+			]
+		}],
+		"window":[{
+			"use":[
+				{"say":"I cannot open it"}
+			],
+			"lookat":[
+				{"say":"Ehi, there's a whole life outside!"}
+			]
+		}]
+	}],
+}

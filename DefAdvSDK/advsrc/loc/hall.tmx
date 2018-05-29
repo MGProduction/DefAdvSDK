@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="left-down" width="1024" height="10" tilewidth="32" tileheight="32" nextobjectid="49">
+ <imagelayer name="bkg">
+  <image source="img/hall.png"/>
+ </imagelayer>
+ <imagelayer name="_" x="227" y="64">
+  <image source="img/frame.png"/>
+ </imagelayer>
+ <imagelayer name="_" x="349" y="64">
+  <image source="img/frame.png"/>
+ </imagelayer>
+ <objectgroup name="movearea">
+  <object id="26" name="walkarea" x="0" y="185.6" width="611.2" height="6.4"/>
+ </objectgroup>
+ <objectgroup name="objects">
+  <object id="37" name="right_door" x="422.4" y="67.2" width="67.2" height="124.8"/>
+  <object id="40" name="left_door" x="128" y="67.2" width="70" height="124.8">
+   <properties>
+    <property name="moveto" value="room1"/>
+   </properties>
+  </object>
+  <object id="44" name="left_frame" x="233.6" y="67.2" width="38.4" height="48">
+   <properties>
+    <property name="overlay" value="img/frame.png"/>
+   </properties>
+  </object>
+  <object id="45" name="right_frame" x="352" y="67.2" width="44.8" height="51.2">
+   <properties>
+    <property name="overlay" value="img/frame.png"/>
+   </properties>
+  </object>
+  <object id="46" name="moved_frame" x="352" y="128" width="44.8" height="51.2">
+   <properties>
+    <property name="overlay" value="img/frame.png"/>
+    <property name="show" value="false"/>
+   </properties>
+  </object>
+  <object id="48" name="safe" x="361.6" y="80" width="25.6" height="28.8">
+   <properties>
+    <property name="overlay" value="img/safe.png"/>
+    <property name="show" value="false"/>
+    <property name="z" value="back"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup name="actors">
+  <object id="23" name="player" x="9.6" y="185.6"/>
+ </objectgroup>
+</map>

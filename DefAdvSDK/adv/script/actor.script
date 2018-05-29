@@ -1,0 +1,223 @@
+local anim = require "adv/lua.anim"
+
+go.property("player", 0)
+
+function init(self)
+	-- Add initialization code here
+	-- Remove this function if not needed
+	self.blockingareas=nil
+	self.stop=false
+	self.name="hero"
+	self.speed=64
+	self.normalspeed=64
+	self.lock=0
+	self.follow=false
+	self.width=go.get("#sprite", "size.x")
+	self.height=go.get("#sprite", "size.y")
+	if self.player == 1 then
+		herosize=vmath.vector3(self.width,self.height,0)
+	end
+	local offset=vmath.vector3(0,-self.height/2,0)
+	go.set_position(offset,"#shadow")
+end
+
+function final(self)
+	-- Add finalization code here
+	-- Remove this function if not needed
+end
+
+function update(self, dt)		
+	self.idle=false
+	if self.destination then
+		local opos=go.get_position()		
+		moving=false
+		self.position=go.get_position()		
+		if math.abs(self.position.x-self.destination.x)<self.normalspeed*dt then
+			self.position.x=self.destination.x
+			if self.sdestination then
+				self.destination.x=self.sdestination.x
+				self.destination.y=self.sdestination.y
+				self.sdestination=nil
+			else
+				--self.destination=nil
+				if self.follow==true then
+					heroendmovement=true
+				end
+			end
+		else
+			if math.abs(self.position.x - self.destination.x ) > self.normalspeed*dt*10 then
+				self.speed=96
+			else
+				self.speed=64
+			end
+			if self.position.x > self.destination.x then
+				self.position.x =self.position.x - self.speed*dt
+				self.facing=anim.LEFT
+				moving=true
+			elseif self.position.x < self.destination.x then
+				self.position.x =self.position.x + self.speed*dt
+				self.facing=anim.RIGHT
+				moving=true
+			end
+		end
+		if math.abs(self.position.y-self.destination.y)<self.speed*dt/2 then
+			self.position.y=self.destination.y
+		else
+			if self.position.y > self.destination.y then
+				self.position.y =self.position.y - self.speed*dt/2
+				moving=true
+			elseif self.position.y < self.destination.y then
+				self.position.y =self.position.y + self.speed*dt/2
+				moving=true
+			end
+		end
+		if self.blockingareas then
+			for i, v in ipairs(self.blockingareas) do
+				if self.position.x-self.width/2 >= v.pos.x and self.position.x-self.width/2 <= v.pos.x+v.size.x then
+					self.position.x=opos.x
+					moving=false
+					if self.follow==true then
+						heroendmovement=true
+					end					
+					break
+				end
+			end
+		end
+		if self.lock==0 then
+			if moving==true then
+				if self.speed==64 then
+					anim.play_animation(self,self.name..".walk",self.facing)
+				else
+					anim.play_animation(self,self.name..".run",self.facing)
+				end
+			else
+				anim.play_animation(self,self.name..".idle",self.facing)
+				self.idle=true
+			end
+		end
+		self.position.z=0.1+0.5-((self.position.y-self.height/2)/screen_h)*0.5
+		go.set_position(self.position)
+		if self.follow==true then
+			msg.post("camera", "follow", { position = self.position })
+			heropos=self.position
+			herosize=vmath.vector3(self.width,self.height,0)
+		end
+	else
+		if self.player == 1 then
+		else
+			if self.stop==true then
+			else
+				if self.position.x > heropos.x then
+					self.facing=1
+				elseif self.position.x < heropos.x then
+					self.facing=0
+				end
+			end
+			if self.lock==0 then
+				anim.play_animation(self,self.name..".idle",self.facing)
+				self.idle=true
+			else
+				anim.play_animation(self,nil,self.facing)
+			end			
+		end
+	end	
+end
+
+function on_message(self, message_id, message, sender)
+	-- Add message-handling code here
+	-- Remove this function if not needed
+	if message_id==hash("lockanim") then
+		if self.lock==0 then
+			anim.play_animation(self,self.name.."."..message.anim,self.facing)
+		end
+		self.lock=self.lock+1
+	elseif message_id==hash("unlockanim") then	
+		if message.kind=="all" then
+			self.lock=0
+		elseif self.lock > 0 then
+			self.lock=self.lock-1
+		end
+		if self.lock==0 then
+			self.lockanim=nil
+		end		
+	elseif message_id==hash("move_to") then
+		self.destination=message.destination
+		self.sdestination=message.sdestination
+		self.follow=message.follow	
+		if self.follow==true then
+			heroendmovement=false
+		end
+	elseif message_id==hash("look_at") then
+		if self.idle==true then
+			local facing=self.facing
+			if self.position.x > message.lookat.x then
+				facing=1
+			elseif self.position.x < message.lookat.x then
+				facing=0
+			end		
+			if facing==self.facing then
+			else
+				self.facing=facing
+				anim.play_animation(self,self.name..".idle",self.facing)
+			end
+		end
+	elseif message_id==hash("set_to") then
+		self.position=message.destination
+		self.follow=message.follow
+		go.set_position(self.position)
+		if self.follow==true then
+			msg.post("camera", "follow", { position = self.position })
+			heropos=self.position
+			herosize=vmath.vector3(self.width,self.height,0)
+			heroendmovement=false
+		end
+	elseif message_id==hash("addblockingarea") then	
+		local area={}
+		area["pos"]=message.pos
+		area["size"]=message.size
+		area["name"]=message.name
+		if self.blockingareas==nil then
+			self.blockingareas={}
+		end
+		table.insert(self.blockingareas, area)
+	elseif message_id==hash("delblockingarea") then	
+		if self.blockingareas then
+			for i, v in ipairs(self.blockingareas) do
+				if v.name==message.name then
+					table.remove(self.blockingareas,i)
+				end
+			end
+		end
+		if self.blockingareas and #self.blockingareas == 0 then
+			self.blockingareas=nil
+		end
+	elseif message_id==hash("resetblockingareas") then	
+		self.blockingareas=nil
+	elseif message_id==hash("stop") then	
+		self.stop=true
+	elseif message_id==hash("set_name") then
+		self.name=message.name
+		anim.play_animation(self,self.name..".idle",self.facing)
+		local offset=vmath.vector3(0,self.height/2,0)
+		self.width=go.get("#sprite", "size.x")
+		self.height=go.get("#sprite", "size.y")
+		if self.name=="hero" then
+		else
+			go.set("#shadow","tint.w",0)
+			--go.set_position(offset,"#shadow")
+		end
+		self.position=go.get_position()		
+		--self.position.z=10.1+0.5-((self.position.y-self.height/2)/screen_h)*0.5
+		go.set_position(self.position)
+	end
+end
+
+function on_input(self, action_id, action)
+	-- Add input-handling code here
+	-- Remove this function if not needed
+end
+
+function on_reload(self)
+	-- Add reload-handling code here
+	-- Remove this function if not needed
+end

@@ -1,0 +1,4 @@
+sound: "/adv/audio/shoot.ogg"
+looping: 0
+group: "master"
+gain: 1.0

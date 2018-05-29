@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="left-down" width="1024" height="10" tilewidth="32" tileheight="32" nextobjectid="40">
+ <imagelayer name="bkg">
+  <image source="img/room2.png"/>
+ </imagelayer>
+ <objectgroup name="movearea">
+  <object id="26" name="walkarea" x="0" y="185.6" width="316.8" height="6.4"/>
+ </objectgroup>
+ <objectgroup name="objects">
+  <object id="37" name="door" x="0" y="86.4" width="35.2" height="105.6">
+   <properties>
+    <property name="moveto" value="hall"/>
+   </properties>
+  </object>
+  <object id="38" name="window" x="220.8" y="67.2" width="44.8" height="64"/>
+  <object id="39" name="exit_door" x="284.8" y="86.4" width="35.2" height="105.6">
+   <properties>
+    <property name="moveto" value="home"/>
+   </properties>
+  </object>
+ </objectgroup>
+ <objectgroup name="actors">
+  <object id="23" name="player" x="9.6" y="185.6"/>
+ </objectgroup>
+</map>

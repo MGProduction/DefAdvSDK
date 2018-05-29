@@ -1,0 +1,18 @@
+images {
+  image: "/adv/img/hall.png"
+}
+images {
+  image: "/adv/img/room1.png"
+}
+images {
+  image: "/adv/img/room2.png"
+}
+images {
+  image: "/adv/img/void.png"
+}
+images {
+  image: "/adv/img/black.png"
+}
+margin: 1
+extrude_borders: 0
+inner_padding: 0

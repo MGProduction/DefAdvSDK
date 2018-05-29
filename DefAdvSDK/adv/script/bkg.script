@@ -1,0 +1,53 @@
+go.property("anim", hash("none"))	
+
+function init(self)
+	self.position=vmath.vector3()
+	msg.post("#sprite", "play_animation", { id = hash(self.anim) })
+	msg.post(".","update")
+end
+
+function final(self)
+	-- Add finalization code here
+	-- Remove this function if not needed
+end
+
+function update(self, dt)
+	-- Add update code here
+	-- Remove this function if not needed
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id==hash("update") then
+		local w
+		local h
+		self.width=go.get("#sprite", "size.x")
+		self.height=go.get("#sprite", "size.y")	
+		if self.width<screen_w then
+			self.position.x=screen_w/2
+			w=screen_w
+		else
+			self.position.x=self.width/2
+			w=self.width
+		end
+		if self.height<screen_h then
+			self.position.y=screen_h/2
+			h=screen_h
+		else		
+			self.position.y=self.height/2
+			h=self.height
+		end
+		self.position.z=-0.5
+		go.set_position(self.position)	
+		msg.post("camera", "set_area",{width=w,height=h})
+	end
+end
+
+function on_input(self, action_id, action)
+	-- Add input-handling code here
+	-- Remove this function if not needed
+end
+
+function on_reload(self)
+	-- Add reload-handling code here
+	-- Remove this function if not needed
+end

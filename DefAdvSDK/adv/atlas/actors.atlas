@@ -1,0 +1,93 @@
+images {
+  image: "/adv/actors/heroshadow.png"
+}
+animations {
+  id: "hero.idle.front"
+  images {
+    image: "/adv/actors/hitman1.png"
+  }
+  images {
+    image: "/adv/actors/hitman2.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 1
+  flip_horizontal: 0
+  flip_vertical: 0
+}
+animations {
+  id: "hero.walk"
+  images {
+    image: "/adv/actors/hitman5.png"
+  }
+  images {
+    image: "/adv/actors/hitman6.png"
+  }
+  images {
+    image: "/adv/actors/hitman7.png"
+  }
+  images {
+    image: "/adv/actors/hitman8.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 10
+  flip_horizontal: 0
+  flip_vertical: 0
+}
+animations {
+  id: "hero.idle"
+  images {
+    image: "/adv/actors/hitman3.png"
+  }
+  images {
+    image: "/adv/actors/hitman4.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 1
+  flip_horizontal: 0
+  flip_vertical: 0
+}
+animations {
+  id: "hero.idle.back"
+  images {
+    image: "/adv/actors/hitman9.png"
+  }
+  images {
+    image: "/adv/actors/hitman10.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 1
+  flip_horizontal: 0
+  flip_vertical: 0
+}
+animations {
+  id: "hero.sitting"
+  images {
+    image: "/adv/actors/hitman11.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 1
+  flip_horizontal: 0
+  flip_vertical: 0
+}
+animations {
+  id: "hero.run"
+  images {
+    image: "/adv/actors/hitman5.png"
+  }
+  images {
+    image: "/adv/actors/hitman6.png"
+  }
+  images {
+    image: "/adv/actors/hitman7.png"
+  }
+  images {
+    image: "/adv/actors/hitman8.png"
+  }
+  playback: PLAYBACK_LOOP_FORWARD
+  fps: 15
+  flip_horizontal: 0
+  flip_vertical: 0
+}
+margin: 1
+extrude_borders: 0
+inner_padding: 0

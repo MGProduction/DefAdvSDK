@@ -1,0 +1,28 @@
+key_trigger {
+  input: KEY_F2
+  action: "togglefullscreen"
+}
+key_trigger {
+  input: KEY_F3
+  action: "togglemusic"
+}
+key_trigger {
+  input: KEY_ESC
+  action: "exitfullscreen"
+}
+key_trigger {
+  input: KEY_BACKSLASH
+  action: "exitfullscreen"
+}
+key_trigger {
+  input: KEY_F7
+  action: "loadgame"
+}
+key_trigger {
+  input: KEY_F8
+  action: "savegame"
+}
+mouse_trigger {
+  input: MOUSE_BUTTON_1
+  action: "click"
+}

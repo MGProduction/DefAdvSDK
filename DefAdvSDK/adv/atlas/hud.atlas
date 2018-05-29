@@ -1,0 +1,78 @@
+images {
+  image: "/adv/hud/icon1.png"
+}
+images {
+  image: "/adv/hud/icon2.png"
+}
+images {
+  image: "/adv/hud/icon3.png"
+}
+images {
+  image: "/adv/hud/icon4.png"
+}
+images {
+  image: "/adv/hud/icon5.png"
+}
+images {
+  image: "/adv/hud/cursor-cross.png"
+}
+images {
+  image: "/adv/hud/cursor-active.png"
+}
+images {
+  image: "/adv/hud/cnt1.png"
+}
+images {
+  image: "/adv/hud/cnt2.png"
+}
+images {
+  image: "/adv/hud/cnt3.png"
+}
+images {
+  image: "/adv/hud/cnt4.png"
+}
+images {
+  image: "/adv/hud/cnt5.png"
+}
+images {
+  image: "/adv/hud/cnt6.png"
+}
+images {
+  image: "/adv/hud/cnt7.png"
+}
+images {
+  image: "/adv/hud/cnt8.png"
+}
+images {
+  image: "/adv/hud/cnt9.png"
+}
+images {
+  image: "/adv/hud/cnt10.png"
+}
+images {
+  image: "/adv/hud/cnt11.png"
+}
+images {
+  image: "/adv/hud/cnt12.png"
+}
+images {
+  image: "/adv/hud/cnt13.png"
+}
+images {
+  image: "/adv/hud/cnt14.png"
+}
+images {
+  image: "/adv/hud/cnt15.png"
+}
+images {
+  image: "/adv/hud/cnt0.png"
+}
+images {
+  image: "/adv/hud/icon_key.png"
+}
+images {
+  image: "/adv/hud/icon_note.png"
+}
+margin: 1
+extrude_borders: 0
+inner_padding: 0
