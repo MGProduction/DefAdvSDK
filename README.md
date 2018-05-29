@@ -10,7 +10,8 @@ A full documentation is not available at the moment (but feel free to peek at th
 
 **DefAdvSDK** is in a preliminary state, use at your own risk (I mean it could still change a lot) 
 Engine code and also the graphics used in this demo are by Marco Giorgini (@marcogiorgini).  
-Both (code assets and graphic assets) are released as CC BY 3.0 (you can use and modify it without fee, but credits are mandatory)
+Code asset (this engine) is releases with MIT Licence.
+Graphic assets are instead released as CC BY 3.0 (you can use and modify it without fee, but credits are mandatory)
 
 **DefAdvSDK** use **DefOS** native library
 
