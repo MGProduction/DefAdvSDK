@@ -16,3 +16,12 @@ Graphic assets are instead released as CC BY 3.0 (you can use and modify it with
 **DefAdvSDK** use **DefOS** native library
 
 This engine has been created and used for the first time as base for **The Child of the Hill House** (a short paranormal adventure game, created in 14 days for *#advjam2018*)
+
+## Quick Start
+Simply clone the DefAdvSDK Defold project and start to modify its assets in adv folder (compiled ones, so game script code is in main.json/loc.json files) or in advsrc folder (source files, so you need to edit/recreate main.txt and the tmx files inside loc subfolder)
+
+### Main concepts
+In DefAdvSDK you have three main elements: **actors** (one is the player the user can deal with, and it can be the only one present in the game), **objects** (that can be put in the inventory, and used to "use with" commands) and **locations/rooms** (that can contains other objects, to deal with)
+
+If you don't want to write directly the loc.json file, locations can be created using Tiled.
+Inside the tiled file the compiler will inspect and extract elements from "bkg" layer, "objects" layer, "actors" layer and "movearea" layer (ignoring all the rest, that you can use to help you creating the scene)
