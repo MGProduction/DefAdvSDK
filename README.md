@@ -23,5 +23,5 @@ Simply clone the DefAdvSDK Defold project and start to modify its assets in adv 
 ### Main concepts
 In DefAdvSDK you have three main elements: **actors** (one is the player the user can deal with, and it can be the only one present in the game), **objects** (that can be put in the inventory, and used to "use with" commands) and **locations/rooms** (that can contains other objects, to deal with)
 
-If you don't want to write directly the loc.json file, locations can be created using Tiled.
-Inside the tiled file the compiler will inspect and extract elements from "bkg" layer, "objects" layer, "actors" layer and "movearea" layer (ignoring all the rest, that you can use to help you creating the scene)
+If you don't want to write directly the loc.json file, locations can be created using Tiled (https://www.mapeditor.org/).
+Inside the tiled file the compiler (**acompiler**) will inspect and extract elements from "bkg" layer, "objects" layer, "actors" layer and "movearea" layer (ignoring all the rest, that you can use to help you creating the scene)
