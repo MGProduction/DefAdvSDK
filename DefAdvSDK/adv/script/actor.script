@@ -107,10 +107,12 @@ function update(self, dt)
 		else
 			if self.stop==true then
 			else
-				if self.position.x > heropos.x then
-					self.facing=1
-				elseif self.position.x < heropos.x then
-					self.facing=0
+				if heropos then
+					if self.position.x > heropos.x then
+						self.facing=1
+					elseif self.position.x < heropos.x then
+						self.facing=0
+					end
 				end
 			end
 			if self.lock==0 then

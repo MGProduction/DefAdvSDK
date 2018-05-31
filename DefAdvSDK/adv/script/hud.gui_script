@@ -9,6 +9,23 @@ local pscreen_h=screen_h
 
 local actions={}
 local inventory={}
+local textarray={}
+
+function addtextelement(self,text,name,pos,btndad,collection)
+	local font="pixelfont"
+	local metrics=gui.get_text_metrics(font,text)
+	local nbtn=gui.new_text_node(pos,text)
+	gui.set_id(nbtn, name)	
+	gui.set_pivot(nbtn,gui.PIVOT_W)
+	gui.set_layer(nbtn,"front")
+
+	local item= {label=name,btn=nbtn,cmd=name,dad=btndad,pressed=false,reqpressed=false,scale=1.0,alpha=0.0}				
+	table.insert(self.abtns, item)	
+
+	if collection then
+		table.insert(collection, nbtn)	
+	end
+end
 
 function addicon(self,img,name,pos,btndad,collection)
 	local atlas="hud"
@@ -44,6 +61,13 @@ function init_gui(self,btndad)
 		addicon(self,adv.inventoryblankicon or "icon5","inv."..i,pos,btndad,inventory)
 		addicon(self,"cnt0","inv.cnt."..i,pos,nil,inventory)
 	end
+
+	--local pos=vmath.vector3(6,screen_h-12-24,0.1)
+	--addtextelement(self,"What's your name?","dlg.1",pos,btndad,actions)
+	--pos=vmath.vector3(6,screen_h-12-24-16*1,0.1)
+	--addtextelement(self,"Why are you here?","dlg.2",pos,btndad,actions)
+	--pos=vmath.vector3(6,screen_h-12-24-16*2,0.1)
+	--addtextelement(self,"Nevermind","dlg.3",pos,btndad,actions)
 	
 	local pos=vmath.vector3(screen_w-12,screen_h-12,0.1)
 	--addicon(self,"icon4","pause",pos,btndad,actions)
@@ -335,12 +359,16 @@ function on_message(self, message_id, message, sender)
 		end
 	elseif message_id==hash("updateval") then
 		local l=gui.get_node("inv.cnt."..message.id)
-		gui.play_flipbook(l,"cnt"..message.cnt)				
+		gui.play_flipbook(l,"cnt"..message.cnt)			
+	elseif message_id==hash("settextarray")	then
+		
 	elseif message_id==hash("hud_enable") then			
 		hud_enable(self,message.enable)
 	elseif message_id==hash("hud_setinv") then
 		local l=gui.get_node("inv."..message.num)		
-		gui.play_flipbook(l,message.img)
+		if message.img then
+			gui.play_flipbook(l,message.img)
+		end
 		if message.val then
 			local l=gui.get_node("inv.cnt."..message.num)		
 			if l==nil then

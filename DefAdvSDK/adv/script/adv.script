@@ -64,6 +64,100 @@ function on_message(self, message_id, message, sender)
 	end
 end
 
+function finalA(self)
+	adv.addcommand(self,"select","dog")
+	adv.addcommand(self,"setanim","death")
+	adv.addcommand(self,"stop","dog")
+	adv.addcommand(self,"setroom","nowhere")
+	adv.addcommand(self,"wait","500")						
+	adv.addcommand(self,"setanim","")						
+	adv.addcommand(self,"say","Not happy about it but I killed the dog")
+	adv.addcommand(self,"say","Its blood seems to disappear on the floor")
+	adv.addcommand(self,"say","Wait...")
+	adv.addcommand(self,"say","Right, this blood sacrifice has been accepted and now the exit door is unlocked again")
+	adv.addcommand(self,"say","Kid, what are you waiting for? Let's go")	
+	adv.addcommand(self,"playmusic","")
+	adv.addcommand(self,"loadroom","outroA")
+end
+
+function finalC(self)
+	adv.addcommand(self,"setanim","death")
+	adv.addcommand(self,"wait","2000")
+	adv.addcommand(self,"playmusic","")
+	adv.addcommand(self,"loadroom","outroC")
+end
+
+function finalB(self)
+	adv.addcommand(self,"select","kid")
+	adv.addcommand(self,"setanim","death")
+	adv.addcommand(self,"wait","800")							
+	adv.addcommand(self,"setanim","")						
+	adv.addcommand(self,"say","I did it")
+	adv.addcommand(self,"say","His blood seems to disappear on the floor")
+	adv.addcommand(self,"say","And now the exit door is unlocked again")
+	adv.addcommand(self,"say","I think it's better I run away quickly as I can")
+	adv.addcommand(self,"playmusic","")
+	adv.addcommand(self,"loadroom","outroB")
+end
+
+function addshoot(self)
+	adv.addcommand(self,"setanim","shoot")										
+	adv.addcommand(self,"playsound","shoot")		
+	adv.addcommand(self,"wait","300")			
+	adv.addcommand(self,"setanim","")					
+	adv.addcommand(self,"wait","400")		
+end
+
+function finalDbase(self)	
+	adv.addcommand(self,"saycolor","green")
+	adv.addcommand(self,"say","GRARRRRRRR")
+	adv.addcommand(self,"saycolor","white")
+	adv.addcommand(self,"say","They're broken the door. And theu're to many")
+	adv.addcommand(self,"moveto","60,185")
+	adv.addcommand(self,"say","I'll try to make their job hard as I can")
+	while self.bulletcnt > 2 do
+		self.bulletcnt=self.bulletcnt-1
+		msg.post("hud","updateval",{id=1,cnt=self.bulletcnt})
+		addshoot(self)
+	end
+	adv.addcommand(self,"playmusic","")
+	adv.addcommand(self,"loadroom","outroD")
+end
+
+function finalD(self)
+	adv.addcommand(self,"say","I missed him. Of course I missed him")
+	finalDbase(self)	
+end
+
+function killDog(self)
+	adv.addcommand(self,"select","dog")
+	adv.addcommand(self,"setanim","death")
+	adv.addcommand(self,"wait","500")							
+	adv.addcommand(self,"unsetblock","dog")
+	adv.addcommand(self,"stop","dog")
+	adv.addcommand(self,"set","$dogdead")
+	adv.addcommand(self,"setroom","nowhere")
+	adv.addcommand(self,"setanim","")						
+	adv.addcommand(self,"say","Ok. I killed the dog")
+	adv.addcommand(self,"say","Something tells me that was not the best possible action")
+end
+
+function finalD2(self)
+	killDog(self)
+	finalDbase(self)
+end
+
+
+function doshootquick(self)
+	adv.setcommand(self,"setanim","shoot")						
+	adv.addcommand(self,"playsound","shoot")							
+end
+
+function shootKid(self)
+	adv.addcommand(self,"say","I've missed him!")
+	adv.addcommand(self,"declare","That's unbeliveable, but my hand moved and I missed him")
+end
+
 function on_input(self, action_id, action)
 	if action_id == nil then
 		adv.handle_cursormovements(self,action)

@@ -40,11 +40,35 @@ M.theactors=nil
 
 -- Inventory handling
 
-M.advsize=4
+M.inventorymaxsize=4
 
 M.hudinventory={}
 M.hudinventorycnt=0
 M.myinventory={}	
+
+function M.getfrominventory(self,val)
+	local i=1
+	while i<=M.hudinventorycnt do
+		if M.hudinventory[i].name==val then
+			return M.hudinventory[i],i
+		end
+		i=i+1
+	end
+	return nil,-1
+end
+
+function M.getselectedfromname(self,val)
+	if val=="" then
+		return M.player
+	else
+		for i,obj in ipairs(M.actors) do
+			if obj.name==val then
+				return obj.obj				
+			end
+		end
+	end
+	return nil
+end
 
 function M.removefrominventory(self,val)
 	local i=1
@@ -60,7 +84,7 @@ function M.removefrominventory(self,val)
 				ii=ii+1
 			end
 			M.hudinventory[i]=nil
-			msg.post("hud", "hud_setinv",{num=i,img="icon5"})
+			msg.post("hud", "hud_setinv",{num=i,img=M.inventoryblankicon})
 			M.hudinventorycnt=M.hudinventorycnt-1
 			break
 		end
@@ -85,13 +109,14 @@ function M.addtoinventory(self,name)
 			item["pos"]=vmath.vector3(12+M.hudinventorycnt*24,screen_h-12,0)
 			item["size"]=vmath.vector3(24,24,0)
 			item["usewith"]=iteminfo["usewith"]
+			item["usefar"]=iteminfo["usefar"]
 			item["icon"]=iteminfo["icon"]
 			item["inventory"]=1
 			item["kind"]=2
-			item["num"]=iteminfo["num"]
+			item["value"]=iteminfo["value"]			
 			M.hudinventorycnt=M.hudinventorycnt+1
 			--if M.hudinventorycnt > 1 then
-			msg.post("hud", "hud_setinv",{num=""..M.hudinventorycnt,val=iteminfo["num"],img=item["icon"]})
+			msg.post("hud", "hud_setinv",{num=""..M.hudinventorycnt,val=iteminfo["value"],img=item["icon"]})
 			--end
 			table.insert(M.hudinventory,item)							
 		end
@@ -203,6 +228,12 @@ function M.playaction(self,name)
 	end
 end
 
+function M.addcondition(self)
+	M.conditionalpos=M.conditionalpos+1
+	M.conditionalcheck=M.conditionalpos
+	M.conditional=0
+end
+
 function M.playcommands(self)		
 	local selected=M.player
 	while(M.commands~=nil) do		
@@ -228,50 +259,73 @@ function M.playcommands(self)
 							end
 						end
 					end
-				elseif cmd=="endif" then					
-					M.conditionalpos=M.conditionalpos-1
-					if M.conditionalpos==0 then
-						M.conditional=nil
+				elseif cmd=="endif" then				
+					if M.conditionalcheck==M.conditionalpos then
+						M.conditionalpos=M.conditionalpos-1
 						M.conditionalcheck=M.conditionalpos
+						if M.conditionalpos==0 then
+							M.conditional=nil
+						end
+					else	
+						M.conditionalpos=M.conditionalpos-1
+						if M.conditionalpos==0 then
+							M.conditional=nil
+							M.conditionalcheck=M.conditionalpos
+						end
 					end
 				else
 					if M.conditionalpos~=M.conditionalcheck or (M.conditional and M.conditional==0) then
-						if cmd=="ifset" or cmd=="ifnotset" or cmd=="ifhave" or cmd=="ifdonthave" then
+						if cmd=="ifset" or cmd=="ifnotset" or cmd=="ifhave" or cmd=="ifdonthave" or cmd=="ifequal" or cmd=="ifmorethan" or cmd=="iflessthan" then
 							M.conditionalpos=M.conditionalpos+1
 						else
 						end
 					else	
-						if cmd=="ifset" then
-							M.conditionalpos=M.conditionalpos+1
-							M.conditionalcheck=M.conditionalpos
+						if cmd=="ifequal" then
+							M.addcondition(self)
+							local sep=split(val,",")
+							local obj,i=M.getfrominventory(self,sep[1])
+							if obj and obj["value"] then
+								if tonumber(obj["value"])==tonumber(sep[2]) then
+									M.conditional=1
+								end								
+							end
+						elseif cmd=="ifmorethan" then
+							M.addcondition(self)
+							local sep=split(val,",")
+							local obj,i=M.getfrominventory(self,sep[1])
+							if obj and obj["value"] then
+								if tonumber(obj["value"])>tonumber(sep[2]) then
+									M.conditional=1
+								end
+							end							
+						elseif cmd=="iflessthan" then
+							M.addcondition(self)
+							local sep=split(val,",")
+							local obj,i=M.getfrominventory(self,sep[1])
+							if obj and obj["value"] then
+								if tonumber(obj["value"])<tonumber(sep[2]) then
+									M.conditional=1
+								end
+							end							
+						elseif cmd=="ifset" then
+							M.addcondition(self)
 							if M.memory[val] then
 								M.conditional=1
-							else
-								M.conditional=0
 							end					
 						elseif cmd=="ifnotset" then
-							M.conditionalpos=M.conditionalpos+1
-							M.conditionalcheck=M.conditionalpos
+							M.addcondition(self)
 							if M.memory[val] == nil then
 								M.conditional=1
-							else
-								M.conditional=0
 							end											
 						elseif cmd=="ifhave" then
-							M.conditionalpos=M.conditionalpos+1
-							M.conditionalcheck=M.conditionalpos
+							M.addcondition(self)
 							if M.myinventory[val] then
 								M.conditional=1
-							else
-								M.conditional=0
 							end					
 						elseif cmd=="ifdonthave" then
-							M.conditionalpos=M.conditionalpos+1
-							M.conditionalcheck=M.conditionalpos
+							M.addcondition(self)
 							if M.myinventory[val] == nil then
 								M.conditional=1
-							else
-								M.conditional=0
 							end												
 						elseif cmd=="set" then
 							M.memory[val]=true
@@ -292,10 +346,24 @@ function M.playcommands(self)
 								if obj.name==val then
 									msg.post(obj.obj, "show",{visible=false})
 									local nm=M.room.."_"..obj.name.."_visible"
-									M.memory[nm]=9
+									M.memory[nm]=0
 									obj.visible=false
 									break
 								end								
+							end
+						elseif cmd=="incval" then	
+							local sep=split(val,",")
+							local obj,i=M.getfrominventory(self,sep[1])
+							if obj and obj["value"] then
+								obj["value"]=tonumber(obj["value"])+tonumber(sep[2])
+								msg.post("hud", "hud_setinv",{num=i,val=obj["value"]})
+							end
+						elseif cmd=="setval" then		
+							local sep=split(val,",")
+							local obj,i=M.getfrominventory(self,sep[1])
+							if obj and obj["value"] then
+								obj["value"]=tonumber(sep[2])
+								msg.post("hud", "hud_setinv",{num=i,val=obj["value"]})
 							end
 						elseif cmd=="take" then
 							M.myinventory[val]=true
@@ -341,17 +409,13 @@ function M.playcommands(self)
 								end
 							end	
 						elseif cmd=="select" then		
-							if val=="" then
-								selected=M.player
-							else
-								for i,obj in ipairs(M.actors) do
-									if obj.name==val then
-										selected=obj.obj
-										break
-									end
-								end
-							end
+							selected=M.getselectedfromname(self,val)							
 						elseif cmd=="setstartingpos" then
+							local v=split(val,",")
+							if v[3] then
+								selected=M.getselectedfromname(self,v[1])							
+								val=v[2]..","..v[3]
+							end							
 							if selected==M.player then
 							else
 								for j,actor in ipairs(M.tplayers) do	
@@ -365,6 +429,11 @@ function M.playcommands(self)
 								end
 							end
 						elseif cmd=="setroom" then	
+							if string.find(val, ",") then
+								local v=split(val,",")
+								selected=M.getselectedfromname(self,v[1])							
+								val=v[2]
+							end							
 							if selected==M.player then
 							else
 								for j,actor in ipairs(M.tplayers) do	
@@ -394,6 +463,11 @@ function M.playcommands(self)
 							if val=="" or val==nil or val=="_" then
 								msg.post(selected,"unlockanim")
 							else
+								if string.find(val, ",") then
+									local v=split(val,",")
+									selected=M.getselectedfromname(self,v[1])							
+									val=v[2]
+								end
 								msg.post(selected,"unlockanim",{kind="all"})
 								msg.post(selected,"lockanim",{anim=val})
 								if selected==M.player then
@@ -423,14 +497,29 @@ function M.playcommands(self)
 							msg.post("hud", "action.examine",{desc=val})
 							M.waitfor=0
 							M.waittime=string.len(val)*0.5				
-						elseif cmd=="goto" then
+						elseif cmd=="call" then
 							local act=M.theactions[val]
 							if act then
-								M.addcommands(self, act)
+								if M.commands[M.commandspos+1] then
+									local more={}
+									local j=M.commandspos
+									local i=j+1
+									while M.commands[i] do										
+										table.insert(more,M.commands[i])	
+										table.remove(M.commands,i)										
+									end									
+									M.commands={}
+									M.commandspos=0
+									M.addcommands(self, act)
+									M.addcommands(self, more)
+								else
+									M.commands={}
+									M.commandspos=0
+									M.addcommands(self, act)
+								end
 							end
 						else
-							local a
-							a=1
+							print("unrecognized cmd: "..cmd.." "..val)
 						end
 					end
 				end
@@ -524,9 +613,18 @@ function M.loadGame(self,name)
 
 	local general=M.game["general"]
 	if general then
+		local title
 		general=general[1]
+		title=general["gamename"]
+		if title then
+			defos.set_window_title(title)
+		end
 		M.inventorymaxsize=general["inventorysize"] or 4
 		M.inventoryblankicon=general["inventoryblankicon"]
+		local config_wantedY=general["height"]
+		if config_wantedY then
+			msg.post("@render:", "update_wantedY",{wanted_Y=config_wantedY})
+		end
 	else
 		M.inventorymaxsize=4
 	end
@@ -1257,8 +1355,10 @@ function M.handle_onclick(self,action)
 							if action == nil and M.selected.kind then
 								action=M.getcmd(self,M.selected.name,"usewith_all",M.selected.kind)			
 							end
-							if action then								
-								M.setcommand(self,"reach",M.selectedwith.pos.x..","..M.selectedwith.pos.y)
+							if action then			
+								if M.selected["usefar"] == nil then
+									M.setcommand(self,"reach",M.selectedwith.pos.x..","..M.selectedwith.pos.y)
+								end
 								M.addcommands(self,action)
 								M.playcommands(self)
 							else
@@ -1350,10 +1450,10 @@ function M.load(self,name)
 			M.myinventory=myfile["inventory"]
 			M.hudinventory=myfile["hudinventory"]
 			M.hudinventorycnt=myfile["hudinventorycnt"]			
-			for i = 1, M.invsize do
+			for i = 1, M.inventorymaxsize do
 				if i<=M.hudinventorycnt then
 					local item=M.hudinventory[i]
-					msg.post("hud", "hud_setinv",{num=i,val=item["num"],img=item["icon"]})
+					msg.post("hud", "hud_setinv",{num=i,val=item["value"],img=item["icon"]})
 				else
 					msg.post("hud", "hud_setinv",{num=i,val=0,img="icon5"})
 				end
