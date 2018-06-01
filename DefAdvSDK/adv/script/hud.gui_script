@@ -194,22 +194,26 @@ function update(self, dt)
 	gui_update(self,dt)
 	if screen_w==pscreen_w and screen_h==pscreen_h then
 	else
-		local pos=vmath.vector3(screen_w-48,screen_h-12,0.1)	
-		l=gui.get_node("lookat")		
-		gui.set_position(l,pos)		
-		local pos=vmath.vector3(screen_w-40,screen_h-40,0.1)	
-		l=gui.get_node("pick")		
-		gui.set_position(l,pos)		
-		local pos=vmath.vector3(screen_w-12,screen_h-48,0.1)	
-		l=gui.get_node("talk")		
-		gui.set_position(l,pos)		
+		local verbs=split(adv.verbs.list,",")
+		for i, v in ipairs(verbs) do
+			local pos=getpos(self,i,#verbs, adv.verbs.anchor)
+			local l=gui.get_node(v)	
+			gui.set_position(l,pos)		
+		end
+
+		for i = 1, adv.inventory.size do
+			local pos=getpos(self,i,adv.inventory.size,adv.inventory.anchor)		
+			local l=gui.get_node("inv."..i)	
+			gui.set_position(l,pos)		
+			l=gui.get_node("inv.cnt."..i)	
+			gui.set_position(l,pos)		
+		end		
 
 		local l=gui.get_node("selected")
 		gui.set_position(l, vmath.vector3(screen_w/2,16,0))
 
 		l=gui.get_node("talkarea")
-		gui.set_position(l, vmath.vector3(screen_w/2,screen_h-8,0))
-		
+		gui.set_position(l, vmath.vector3(screen_w/2,screen_h-8,0))		
 
 		pscreen_w=screen_w
 		pscreen_h=screen_h

@@ -1,15 +1,12 @@
 images {
-image: "/adv/img/play.png"
+  image: "/adv/img/play.png"
 }
-
 images {
-image: "adv/img/void.png"
+  image: "/adv/img/void.png"
 }
-
 images {
-image: "adv/img/black.png"
+  image: "/adv/img/black.png"
 }
-
 margin: 0
 extrude_borders: 0
 inner_padding: 0

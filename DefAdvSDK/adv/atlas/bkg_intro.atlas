@@ -1,19 +1,15 @@
 images {
-image: "/adv/img/home.jpg"
+  image: "/adv/img/home.jpg"
 }
-
 images {
-image: "/adv/img/splash_logo.png"
+  image: "/adv/img/splash_logo.png"
 }
-
 images {
-image: "adv/img/void.png"
+  image: "/adv/img/void.png"
 }
-
 images {
-image: "adv/img/black.png"
+  image: "/adv/img/black.png"
 }
-
 margin: 0
 extrude_borders: 0
 inner_padding: 0
