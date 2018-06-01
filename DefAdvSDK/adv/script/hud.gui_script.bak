@@ -11,14 +11,6 @@ local actions={}
 local inventory={}
 local textarray={}
 
-function split(s, delimiter)
-	result = {};
-	for match in (s..delimiter):gmatch("(.-)"..delimiter) do
-		table.insert(result, match);
-	end
-	return result;
-end
-
 function addtextelement(self,text,name,pos,btndad,collection)
 	local font="pixelfont"
 	local metrics=gui.get_text_metrics(font,text)
@@ -55,39 +47,18 @@ function addicon(self,img,name,pos,btndad,collection)
 	end
 end
 
-function getpos(self,i,hm,anchor)
-	local pos
-	if anchor=="topleft" then
-		pos=vmath.vector3(24*(i-1)+12,screen_h-12,0.1)
-	elseif anchor=="bottomleft" then
-		pos=vmath.vector3(24*(i-1)+12,12,0.1)
-	elseif anchor=="topright" then
-		pos=vmath.vector3( screen_w-12-24*(hm-i),screen_h-12,0.1)
-	elseif anchor=="bottomright" then
-		pos=vmath.vector3(screen_w-12-24*(hm-i),12,0.1)
-	end
-	return pos
-end
-
 function init_gui(self,btndad)
 
-	local verbs=split(adv.verbs.list,",")
-	local icons=split(adv.verbs.icons,",")
-	for i, v in ipairs(verbs) do
-		local pos=getpos(self,i,#verbs, adv.verbs.anchor)
-		addicon(self,icons[i],v,pos,btndad,actions)
-	end
-	
-	--local pos=vmath.vector3(screen_w-48,screen_h-12,0.1)	
-	--addicon(self,"icon1","lookat",pos,btndad,actions)
-	--local pos=vmath.vector3(screen_w-40,screen_h-40,0.1)	
-	--addicon(self,"icon2","pick",pos,btndad,actions)
-	--local pos=vmath.vector3(screen_w-12,screen_h-48,0.1)	
-	--addicon(self,"icon3","talk",pos,btndad,actions)
+	local pos=vmath.vector3(screen_w-48,screen_h-12,0.1)	
+	addicon(self,"icon1","lookat",pos,btndad,actions)
+	local pos=vmath.vector3(screen_w-40,screen_h-40,0.1)	
+	addicon(self,"icon2","pick",pos,btndad,actions)
+	local pos=vmath.vector3(screen_w-12,screen_h-48,0.1)	
+	addicon(self,"icon3","talk",pos,btndad,actions)
 
-	for i = 1, adv.inventory.size do
-		local pos=getpos(self,i,adv.inventory.size,adv.inventory.anchor)		
-		addicon(self,adv.inventory.blankicon or "icon5","inv."..i,pos,btndad,inventory)
+	for i = 1, adv.inventorymaxsize do
+		local pos=vmath.vector3(24*(i-1)+12,screen_h-12,0.1)
+		addicon(self,adv.inventoryblankicon or "icon5","inv."..i,pos,btndad,inventory)
 		addicon(self,"cnt0","inv.cnt."..i,pos,nil,inventory)
 	end
 

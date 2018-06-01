@@ -39,8 +39,8 @@ M.theactions=nil
 M.theactors=nil
 
 -- Inventory handling
-M.inventory={}
-M.verbs={}
+
+M.inventorymaxsize=4
 
 M.hudinventory={}
 M.hudinventorycnt=0
@@ -84,7 +84,7 @@ function M.removefrominventory(self,val)
 				ii=ii+1
 			end
 			M.hudinventory[i]=nil
-			msg.post("hud", "hud_setinv",{num=i,img=M.inventory.blankicon})
+			msg.post("hud", "hud_setinv",{num=i,img=M.inventoryblankicon})
 			M.hudinventorycnt=M.hudinventorycnt-1
 			break
 		end
@@ -619,37 +619,15 @@ function M.loadGame(self,name)
 		if title then
 			defos.set_window_title(title)
 		end
+		M.inventorymaxsize=general["inventorysize"] or 4
+		M.inventoryblankicon=general["inventoryblankicon"]
 		local config_wantedY=general["height"]
 		if config_wantedY then
 			msg.post("@render:", "update_wantedY",{wanted_Y=config_wantedY})
 		end
+	else
+		M.inventorymaxsize=4
 	end
-
-	local general_i=M.game["inventory"]
-	if general_i then		
-		general_i=general_i[1]
-		M.inventory.anchor=general_i["anchor"] or "topleft"
-		M.inventory.size=general_i["size"] or 4
-		M.inventory.rows=general_i["rows"] or 1
-		M.inventory.blankicon=general_i["blankicon"]			
-	else
-		M.inventory.size=4
-		M.inventory.rows=1
-		M.inventory.anchor="topleft"
-		M.inventory.blankicon="icon5"
-	end	
-
-	local general_v=M.game["verbs"]
-	if general_v then		
-		general_v=general_v[1]
-		M.verbs.anchor=general_v["anchor"] or "topright"
-		M.verbs.list=general_v["list"] or "look at,use,talk to"
-		M.verbs.icons=general_v["icons"] or "icon1,icon2,icon3"
-	else
-		M.verbs.anchor="topright"
-		M.verbs.list="look at,use,talk to"
-		M.verbs.icons="icon1,icon2,icon3"
-	end	
 
 	local firstroom=config["starting"]
 
@@ -1472,7 +1450,7 @@ function M.load(self,name)
 			M.myinventory=myfile["inventory"]
 			M.hudinventory=myfile["hudinventory"]
 			M.hudinventorycnt=myfile["hudinventorycnt"]			
-			for i = 1, M.inventory.size do
+			for i = 1, M.inventorymaxsize do
 				if i<=M.hudinventorycnt then
 					local item=M.hudinventory[i]
 					msg.post("hud", "hud_setinv",{num=i,val=item["value"],img=item["icon"]})

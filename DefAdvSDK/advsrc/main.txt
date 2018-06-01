@@ -1,8 +1,16 @@
 general:
 		gamename: DefAdvSDK
 		height: 200
-		inventorysize:2
-		inventoryblankicon:icon5
+
+inventory:
+		anchor:topleft
+		size:2
+		blankicon:icon5
+
+verbs:
+		anchor:topright
+		list:look_at,use,talk_to
+		icons:icon1,icon2,icon3		
 
 config:
 		starting: splash

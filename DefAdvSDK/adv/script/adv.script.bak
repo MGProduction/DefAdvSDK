@@ -1,0 +1,169 @@
+local config = require "adv/lua/config"
+local adv = require "adv/lua/adventure"
+
+function init(self)
+
+	local firstroom=adv.loadGame(self,"main")
+	
+	adv.loadRoom(self,firstroom)	
+	msg.post("hud", "hud_enable",{enable=0})
+		
+	msg.post(".", "acquire_input_focus")		
+	
+end
+
+function final(self)
+	adv.unloadGame(self)
+	msg.post(".", "release_input_focus")
+end
+
+
+function update(self, dt)
+	adv.update(self,dt)	
+end
+
+function on_message(self, message_id, message, sender)
+	if message_id==hash("readytoload") then
+		adv.deleteRoom(self)
+		if adv.jumpto=="quit" then			
+			next_scene="loader#home"			
+			msg.post("game:/loader#game", "unload_scene", { position = go.get_position() })	
+		else			
+			adv.loadRoom(self,adv.jumpto)	
+		end
+	elseif message_id == hash("end") then
+		msg.post("@render:", "clear_color", { color = vmath.vector4(0,0,0, 0) })
+		msg.post("game:/loader#game", "unload_scene", { position = go.get_position() })	
+	elseif message_id==hash("endfadein") then	
+		if adv.commands == nil then
+			local mask=1
+			if adv.player==nil then
+				mask=1
+			else
+				mask=2
+			end
+			msg.post("hud", "hud_enable",{enable=mask})
+		else
+			msg.post("hud", "hud_enable",{enable=0})
+			adv.playcommands(self)
+		end
+	elseif message_id==hash("btn_cmd_pause") then
+		a=1
+	elseif message_id==hash("btn_cmd_lookat") then
+		msg.post("hud","setactionprefix",{prefix="look at"})
+		adv.action="look at"		
+		adv.twoobjects=nil
+	elseif message_id==hash("btn_cmd_talk") then
+		msg.post("hud","setactionprefix",{prefix="talk to"})
+		adv.action="talk to"
+		adv.twoobjects=nil
+	elseif message_id==hash("btn_cmd_pick") then
+		msg.post("hud","setactionprefix",{prefix="use"})
+		adv.action="use"
+		adv.twoobjects=nil
+	end
+end
+
+function finalA(self)
+	adv.addcommand(self,"select","dog")
+	adv.addcommand(self,"setanim","death")
+	adv.addcommand(self,"stop","dog")
+	adv.addcommand(self,"setroom","nowhere")
+	adv.addcommand(self,"wait","500")						
+	adv.addcommand(self,"setanim","")						
+	adv.addcommand(self,"say","Not happy about it but I killed the dog")
+	adv.addcommand(self,"say","Its blood seems to disappear on the floor")
+	adv.addcommand(self,"say","Wait...")
+	adv.addcommand(self,"say","Right, this blood sacrifice has been accepted and now the exit door is unlocked again")
+	adv.addcommand(self,"say","Kid, what are you waiting for? Let's go")	
+	adv.addcommand(self,"playmusic","")
+	adv.addcommand(self,"loadroom","outroA")
+end
+
+function finalC(self)
+	adv.addcommand(self,"setanim","death")
+	adv.addcommand(self,"wait","2000")
+	adv.addcommand(self,"playmusic","")
+	adv.addcommand(self,"loadroom","outroC")
+end
+
+function finalB(self)
+	adv.addcommand(self,"select","kid")
+	adv.addcommand(self,"setanim","death")
+	adv.addcommand(self,"wait","800")							
+	adv.addcommand(self,"setanim","")						
+	adv.addcommand(self,"say","I did it")
+	adv.addcommand(self,"say","His blood seems to disappear on the floor")
+	adv.addcommand(self,"say","And now the exit door is unlocked again")
+	adv.addcommand(self,"say","I think it's better I run away quickly as I can")
+	adv.addcommand(self,"playmusic","")
+	adv.addcommand(self,"loadroom","outroB")
+end
+
+function addshoot(self)
+	adv.addcommand(self,"setanim","shoot")										
+	adv.addcommand(self,"playsound","shoot")		
+	adv.addcommand(self,"wait","300")			
+	adv.addcommand(self,"setanim","")					
+	adv.addcommand(self,"wait","400")		
+end
+
+function finalDbase(self)	
+	adv.addcommand(self,"saycolor","green")
+	adv.addcommand(self,"say","GRARRRRRRR")
+	adv.addcommand(self,"saycolor","white")
+	adv.addcommand(self,"say","They're broken the door. And theu're to many")
+	adv.addcommand(self,"moveto","60,185")
+	adv.addcommand(self,"say","I'll try to make their job hard as I can")
+	while self.bulletcnt > 2 do
+		self.bulletcnt=self.bulletcnt-1
+		msg.post("hud","updateval",{id=1,cnt=self.bulletcnt})
+		addshoot(self)
+	end
+	adv.addcommand(self,"playmusic","")
+	adv.addcommand(self,"loadroom","outroD")
+end
+
+function finalD(self)
+	adv.addcommand(self,"say","I missed him. Of course I missed him")
+	finalDbase(self)	
+end
+
+function killDog(self)
+	adv.addcommand(self,"select","dog")
+	adv.addcommand(self,"setanim","death")
+	adv.addcommand(self,"wait","500")							
+	adv.addcommand(self,"unsetblock","dog")
+	adv.addcommand(self,"stop","dog")
+	adv.addcommand(self,"set","$dogdead")
+	adv.addcommand(self,"setroom","nowhere")
+	adv.addcommand(self,"setanim","")						
+	adv.addcommand(self,"say","Ok. I killed the dog")
+	adv.addcommand(self,"say","Something tells me that was not the best possible action")
+end
+
+function finalD2(self)
+	killDog(self)
+	finalDbase(self)
+end
+
+
+function doshootquick(self)
+	adv.setcommand(self,"setanim","shoot")						
+	adv.addcommand(self,"playsound","shoot")							
+end
+
+function shootKid(self)
+	adv.addcommand(self,"say","I've missed him!")
+	adv.addcommand(self,"declare","That's unbeliveable, but my hand moved and I missed him")
+end
+
+function on_input(self, action_id, action)
+	if action_id == nil then
+		adv.handle_cursormovements(self,action)
+	elseif action_id == hash("click") then
+		adv.handle_onclick(self,action)
+	else
+		adv.handle_onkeyevents(self,action_id,action)
+	end
+end
