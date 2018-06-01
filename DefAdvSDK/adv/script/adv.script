@@ -47,20 +47,13 @@ function on_message(self, message_id, message, sender)
 			msg.post("hud", "hud_enable",{enable=0})
 			adv.playcommands(self)
 		end
+	elseif message_id==hash("btn_cmd") then		
+		local lprefix=string.gsub(message.cmd,"_+", " ")
+		msg.post("hud","setactionprefix",{prefix=lprefix})
+		adv.action=lprefix		
+		adv.twoobjects=nil
 	elseif message_id==hash("btn_cmd_pause") then
-		a=1
-	elseif message_id==hash("btn_cmd_look_at") then
-		msg.post("hud","setactionprefix",{prefix="look at"})
-		adv.action="look at"		
-		adv.twoobjects=nil
-	elseif message_id==hash("btn_cmd_talk_to") then
-		msg.post("hud","setactionprefix",{prefix="talk to"})
-		adv.action="talk to"
-		adv.twoobjects=nil
-	elseif message_id==hash("btn_cmd_use") then
-		msg.post("hud","setactionprefix",{prefix="use"})
-		adv.action="use"
-		adv.twoobjects=nil
+		a=1	
 	end
 end
 

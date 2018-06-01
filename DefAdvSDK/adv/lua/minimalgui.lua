@@ -35,15 +35,15 @@ function handle_touch(self,x,y,bpressed,breleased,dad)
 						msg.post(obj.dad, wcmd, {what=swhat,code=scode})
 					else
 						local poscode=string.find(obj.cmd,"::")
-						local wcmd
+						local wcmd="btn_cmd"
 						local scode=nil
-						if poscode == nil then
-							wcmd="btn_cmd_"..obj.cmd
-						else
-							wcmd="btn_cmd_"..string.sub(obj.cmd, 1,poscode-1)
-							scode=string.sub(obj.cmd, poscode+2)
-						end							
-						msg.post(obj.dad, wcmd, {code=scode})
+						--if poscode == nil then
+						--	wcmd="btn_cmd_"..obj.cmd
+						--else
+						--	wcmd="btn_cmd_"..string.sub(obj.cmd, 1,poscode-1)
+						--	scode=string.sub(obj.cmd, poscode+2)
+						--end							
+						msg.post(obj.dad, wcmd, {cmd=obj.cmd,code=scode})
 					end
 					obj.reqpressed=false
 				else

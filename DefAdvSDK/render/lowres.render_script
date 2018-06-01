@@ -95,10 +95,10 @@ function on_message(self, message_id, message)
 	if message_id == hash("clear_color") then
 		self.clear_color = message.color
 	elseif message_id == hash("update_wantedY") then	
-		if wantedY==message.wantedY then
+		if wanted_Y==message.wanted_Y then
 		else
 			wanted_X=nil
-			wanted_Y=message.wanted_Y
+			wanted_Y=tonumber(message.wanted_Y)
 			update_size(self,wanted_X,wanted_Y)
 		end
 	elseif message_id == hash("set_view_projection") then
