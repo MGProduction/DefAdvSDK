@@ -8,7 +8,7 @@ screen_h = screen_height
 wanted_Y=200
 wanted_X=nil
 
-function update_size(self,wanted_X,wanted_Y)
+function render_update_size(self,wanted_X,wanted_Y)
 	local current_width = render.get_window_width()
 	local current_height = render.get_window_height()
 
@@ -52,14 +52,14 @@ function init(self)
 
 	self.view = vmath.matrix4()
 
-	update_size(self,wanted_X,wanted_Y)
+	render_update_size(self,wanted_X,wanted_Y)
 end
 
 function update(self)
 	render.set_depth_mask(true)
 	render.clear({[render.BUFFER_COLOR_BIT] = self.clear_color, [render.BUFFER_DEPTH_BIT] = 1, [render.BUFFER_STENCIL_BIT] = 0})
 
-	update_size(self,wanted_X,wanted_Y)
+	render_update_size(self,wanted_X,wanted_Y)
 	
 	render.set_viewport(0, 0, screen_width, screen_height)
 	render.set_view(self.view)
@@ -99,7 +99,7 @@ function on_message(self, message_id, message)
 		else
 			wanted_X=nil
 			wanted_Y=tonumber(message.wanted_Y)
-			update_size(self,wanted_X,wanted_Y)
+			render_update_size(self,wanted_X,wanted_Y)
 		end
 	elseif message_id == hash("set_view_projection") then
 		self.view = message.view

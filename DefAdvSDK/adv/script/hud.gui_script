@@ -35,15 +35,17 @@ function addtextelement(self,text,name,pos,btndad,collection)
 	end
 end
 
-function addicon(self,img,name,pos,btndad,collection)
+function addicon(self,img,name,pos,wsize,btndad,collection)
 	local atlas="hud"
-	local size=vmath.vector3(24,24,0)
+	local size=vmath.vector3(wsize.x,wsize.y,0)
 	local nbtn=gui.new_box_node(pos, size)
 	local color=vmath.vector4(1,1,1,0)
 	gui.set_size_mode(nbtn,gui.SIZE_MODE_AUTO)
 	gui.set_texture(nbtn,atlas)
 	gui.play_flipbook(nbtn,img)									
-	gui.set_id(nbtn, name)	
+	if name then
+		gui.set_id(nbtn, name)	
+	end
 	gui.set_color(nbtn, color)	
 	gui.set_layer(nbtn,"front")
 	 
@@ -55,34 +57,102 @@ function addicon(self,img,name,pos,btndad,collection)
 	end
 end
 
-function getpos(self,i,hm,anchor)
-	local pos
-	if anchor=="topleft" then
-		pos=vmath.vector3(24*(i-1)+12,screen_h-12,0.1)
-	elseif anchor=="bottomleft" then
-		pos=vmath.vector3(24*(i-1)+12,12,0.1)
-	elseif anchor=="topright" then
-		pos=vmath.vector3( screen_w-12-24*(hm-i),screen_h-12,0.1)
-	elseif anchor=="bottomright" then
-		pos=vmath.vector3(screen_w-12-24*(hm-i),12,0.1)
+function addlabel(self,label,name,pos,wsize,btndad,collection)
+	local font="pixelfont"
+	local metrics=gui.get_text_metrics(font,label)	
+	local size=vmath.vector3(wsize.x,wsize.y,0)	
+	local color=vmath.vector4(1,1,1,0)
+
+	local nbtn=gui.new_text_node(pos,label)
+	
+	gui.set_id(nbtn, name)	
+	gui.set_color(nbtn, color)	
+	gui.set_layer(nbtn,"front")
+
+	local item= {label=name,btn=nbtn,cmd=name,dad=btndad,pressed=false,reqpressed=false,scale=1.0,alpha=0.0}				
+	table.insert(self.abtns, item)	
+
+	if collection then
+		table.insert(collection, nbtn)	
 	end
+end
+
+function getpos(self,size,grid,i,hm,anchor)
+	local pos,xx,yy
+	local w=size.x
+	local h=size.y
+	local y=math.floor((i-1)/grid.x)
+	local x=(i-1)%grid.x
+	local hm=grid.x
+	if anchor=="topleft" then
+		xx=w*(x)+w/2
+		yy=screen_h-h/2-y*h
+	elseif anchor=="bottomleft" then
+		xx=w*(x)+w/2
+		yy=h/2+(grid.y-y-1)*h
+	elseif anchor=="topright" then
+		xx=screen_w-w/2-w*(hm-x-1)
+		yy=screen_h-h/2-y*h
+	elseif anchor=="bottomright" then
+		xx=screen_w-w/2-w*(hm-x-1)
+		yy=h/2+(grid.y-y-1)*h
+	end
+	pos=vmath.vector3(xx,yy,0.1)
 	return pos
 end
 
-function init_gui(self,btndad)
+function sethudsize(self,ax,ay,bx,by)
+	local hud={}
+	hud.pos=vmath.vector3()
+	hud.size=vmath.vector3()
+	hud.pos.x=(ax+bx)/2
+	hud.pos.y=(ay+by)/2
+	hud.size.x=(bx-ax)
+	hud.size.y=-(by-ay)
+	return hud
+end
 
+function init_gui(self,btndad)
+	local ax,ay,bx,by
 	local verbs=split(adv.verbs.list,",")
-	local icons=split(adv.verbs.icons,",")
-	for i, v in ipairs(verbs) do
-		local pos=getpos(self,i,#verbs, adv.verbs.anchor)
-		addicon(self,icons[i],v,pos,btndad,actions)
-	end
+	local icons
 	
-	for i = 1, adv.inventory.size do
-		local pos=getpos(self,i,adv.inventory.size,adv.inventory.anchor)		
-		addicon(self,adv.inventory.blankicon or "icon5","inv."..i,pos,btndad,inventory)
-		addicon(self,"cnt0","inv.cnt."..i,pos,nil,inventory)
+	if adv.verbs.icons then
+		icons=split(adv.verbs.icons,",")
+	else
+		icons=split(adv.verbs.labels,",")
 	end
+	for i, v in ipairs(verbs) do
+		local pos=getpos(self,adv.verbs.size,adv.verbs.grid,i,#verbs, adv.verbs.anchor)
+		if adv.verbs.labels then
+			addicon(self,"label_empty","vbkg."..i,pos,adv.verbs.size,nil,actions)
+			addlabel(self,icons[i],v,pos,adv.verbs.size,btndad,actions)
+		else
+			addicon(self,icons[i],v,pos,adv.verbs.size,btndad,actions)
+		end
+		if i==1 then
+			ax=pos.x-adv.verbs.size.x/2
+			ay=pos.y+adv.verbs.size.y/2
+		elseif i == #verbs then
+			bx=pos.x+adv.verbs.size.x/2
+			by=pos.y-adv.verbs.size.y/2
+		end
+	end
+	adv.verbs.hud=sethudsize(self,ax,ay,bx,by)
+	
+	for i = 1, adv.inventory.count do
+		local pos=getpos(self,adv.inventory.size,adv.inventory.grid,i,adv.inventory.count,adv.inventory.anchor)		
+		addicon(self,adv.inventory.blankicon or "icon5","inv."..i,pos,adv.verbs.size,btndad,inventory)
+		addicon(self,"cnt0","inv.cnt."..i,pos,adv.inventory.size,nil,inventory)
+		if i==1 then
+			ax=pos.x-adv.inventory.size.x/2
+			ay=pos.y+adv.inventory.size.y/2
+		elseif i == adv.inventory.count then
+			bx=pos.x+adv.inventory.size.x/2
+			by=pos.y-adv.inventory.size.y/2
+		end
+	end
+	adv.inventory.hud=sethudsize(self,ax,ay,bx,by)
 
 	--local pos=vmath.vector3(6,screen_h-12-24,0.1)
 	--addtextelement(self,"What's your name?","dlg.1",pos,btndad,actions)
@@ -187,20 +257,42 @@ function update(self, dt)
 	gui_update(self,dt)
 	if screen_w==pscreen_w and screen_h==pscreen_h then
 	else
+		local ax,ay,bx,by
 		local verbs=split(adv.verbs.list,",")
+
 		for i, v in ipairs(verbs) do
-			local pos=getpos(self,i,#verbs, adv.verbs.anchor)
+			local pos=getpos(self,adv.verbs.size,adv.verbs.grid,i,#verbs, adv.verbs.anchor)
 			local l=gui.get_node(v)	
 			gui.set_position(l,pos)		
+			if adv.verbs.labels then
+				l=gui.get_node("vbkg."..i)
+				gui.set_position(l,pos)		
+			end
+			if i==1 then
+				ax=pos.x-adv.verbs.size.x/2
+				ay=pos.y+adv.verbs.size.y/2
+			elseif i == #verbs then
+				bx=pos.x+adv.verbs.size.x/2
+				by=pos.y-adv.verbs.size.y/2
+			end
 		end
+		adv.verbs.hud=sethudsize(self,ax,ay,bx,by)
 
-		for i = 1, adv.inventory.size do
-			local pos=getpos(self,i,adv.inventory.size,adv.inventory.anchor)		
+		for i = 1, adv.inventory.count do
+			local pos=getpos(self,adv.inventory.size,adv.inventory.grid,i,adv.inventory.count,adv.inventory.anchor)		
 			local l=gui.get_node("inv."..i)	
 			gui.set_position(l,pos)		
 			l=gui.get_node("inv.cnt."..i)	
 			gui.set_position(l,pos)		
+			if i==1 then
+				ax=pos.x-adv.inventory.size.x/2
+				ay=pos.y+adv.inventory.size.y/2
+			elseif i == adv.inventory.count then
+				bx=pos.x+adv.inventory.size.x/2
+				by=pos.y-adv.inventory.size.y/2
+			end
 		end		
+		adv.inventory.hud=sethudsize(self,ax,ay,bx,by)
 
 		local l=gui.get_node("selected")
 		gui.set_position(l, vmath.vector3(screen_w/2,16,0))

@@ -73,6 +73,9 @@ images {
 images {
   image: "/adv/hud/icon_note.png"
 }
+images {
+  image: "/advsrc/hud/label_empty.png"
+}
 margin: 1
 extrude_borders: 0
 inner_padding: 0

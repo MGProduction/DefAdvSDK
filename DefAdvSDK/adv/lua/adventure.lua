@@ -611,44 +611,69 @@ function M.loadGame(self,name)
 	
 	config=config[1]
 
-	local general=M.game["general"]
-	if general then
+	M.general=M.game["general"]
+	if M.general then
 		local title
-		general=general[1]
-		title=general["gamename"]
+		M.general=M.general[1]
+		title=M.general["gamename"]
 		if title then
 			defos.set_window_title(title)
 		end
-		local config_wantedY=general["height"]
+		local config_wantedY=M.general["height"]
 		if config_wantedY then
 			msg.post("@render:", "update_wantedY",{wanted_Y=config_wantedY})
 		end
 	end
 
-	local general_i=M.game["inventory"]
+	local general_i=M.game["inventory"]	
 	if general_i then		
 		general_i=general_i[1]
 		M.inventory.anchor=general_i["anchor"] or "topleft"
-		M.inventory.size=general_i["size"] or 4
-		M.inventory.rows=general_i["rows"] or 1
-		M.inventory.blankicon=general_i["blankicon"]			
+		local columns=general_i["columns"] or 4
+		local rows=general_i["rows"] or 1
+		M.inventory.grid=vmath.vector3(columns,rows,0)
+		M.inventory.blankicon=general_i["blankicon"]	
+		t=general_i["size"]
+		if t then
+			local p=split(t,",")			
+			M.inventory.size=vmath.vector3(tonumber(p[1]),tonumber(p[2]),0)
+		else
+			M.inventory.size=vmath.vector3(24,24,0)
+		end				
 	else
-		M.inventory.size=4
-		M.inventory.rows=1
 		M.inventory.anchor="topleft"
 		M.inventory.blankicon="icon5"
+		M.inventory.size=vmath.vector3(24,24,0)
+		M.inventory.grid=vmath.vector3(4,1,0)
 	end	
+	M.inventory.count=M.inventory.grid.x*M.inventory.grid.y
 
-	local general_v=M.game["verbs"]
-	if general_v then		
+	local general_v=M.game["verbs"]	
+	if general_v then	
+		local t	
 		general_v=general_v[1]
+		local columns=general_v["columns"] or 3
+		local rows=general_v["rows"] or 1
+		M.verbs.grid=vmath.vector3(columns,rows,0)
 		M.verbs.anchor=general_v["anchor"] or "topright"
-		M.verbs.list=general_v["list"] or "look at,use,talk to"
-		M.verbs.icons=general_v["icons"] or "icon1,icon2,icon3"
+		M.verbs.list=general_v["list"] or "look at,use,talk to"		
+		M.verbs.labels=general_v["labels"]
+		if M.verbs.labels == nil then
+			M.verbs.icons=general_v["icons"] or "icon1,icon2,icon3"		
+		end
+		t=general_v["size"]
+		if t then
+			local p=split(t,",")			
+			M.verbs.size=vmath.vector3(tonumber(p[1]),tonumber(p[2]),0)
+		else
+			M.verbs.size=vmath.vector3(24,24,0)
+		end		
 	else
 		M.verbs.anchor="topright"
 		M.verbs.list="look at,use,talk to"
 		M.verbs.icons="icon1,icon2,icon3"
+		M.verbs.size=vmath.vector3(24,24,0)
+		M.verbs.grid=vmath.vector3(3,1,0)
 	end	
 
 	local firstroom=config["starting"]
@@ -981,10 +1006,17 @@ function M.loadRoom(self,name)
 	local atlas
 	local bkg=M.data["bkg"]
 	if bkg then
-		local img
-		atlas=bkg["atlas"]
-		img=bkg["name"]
-		M.bkg=factory.create("#back"..atlas.."factory",nil,nil,{anim=hash(img)})			
+		local img=bkg["name"]
+		local align=bkg["align"]
+		atlas=bkg["atlas"]				
+		if align==nil then
+			align=M.general["bkgalign"]
+		end
+		if align then
+			M.bkg=factory.create("#back"..atlas.."factory",nil,nil,{anim=hash(img),align=hash(align)})			
+		else
+			M.bkg=factory.create("#back"..atlas.."factory",nil,nil,{anim=hash(img)})			
+		end
 	end
 	local objects=M.data["objects"]
 	if objects then
@@ -1140,13 +1172,17 @@ function M.handle_cursormovements(self,action)
 	local mydesc=nil
 	dest.x=action.x*ratio_x
 	dest.y=action.y*ratio_y
-	for i,obj in ipairs(M.hudinventory) do
-		if obj.disabled==nil and M.pointinObject(self,obj,dest) then 
+	if M.pointinObject(self,M.inventory.hud,dest) then
+		local x=math.floor((dest.x-(M.inventory.hud.pos.x-M.inventory.hud.size.x/2))/M.inventory.size.x)
+		local y=math.floor((dest.y-(M.inventory.hud.pos.y-M.inventory.hud.size.y/2))/M.inventory.size.y)
+		local i=x+(M.inventory.grid.y-y-1)*M.inventory.grid.x+1
+		obj=M.hudinventory[i]
+		if obj and obj.disabled==nil then 
 			activity=2
 			selected=obj
-			break
 		end
 	end
+	
 	if activity==0 then
 		dest.x=action.x*ratio_x+camerapos.x		
 		for i,obj in ipairs(M.elements) do
@@ -1342,8 +1378,9 @@ function M.handle_onclick(self,action)
 			end
 		end
 	else
-					
-		if dest.x > screen_w/2 and dest.y > screen_h-64 then
+
+		if M.pointinObject(self,M.verbs.hud,dest) then 
+		--if dest.x > screen_w/2 and dest.y > screen_h-64 then
 			msg.post("hud", "on_input",{action_id=action_id,action=action})		
 			icon = 1
 		end		

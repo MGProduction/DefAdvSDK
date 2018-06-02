@@ -15,7 +15,7 @@
     <property name="moveto" value="hall"/>
    </properties>
   </object>
-  <object id="38" name="left library" x="41.6" y="41.6" width="83.2" height="144"/>
+  <object id="38" name="left_library" x="41.6" y="41.6" width="83.2" height="144"/>
   <object id="40" name="desk" x="182.4" y="137.6" width="108.8" height="9.6"/>
   <object id="41" name="right_library" x="355.2" y="41.6" width="80" height="140.8"/>
   <object id="43" name="left_drawer" x="188.8" y="147.2" width="44.8" height="12.8"/>

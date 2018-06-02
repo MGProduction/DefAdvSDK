@@ -1,17 +1,27 @@
 {
 	"general":[{
 			"gamename":"DefAdvSDK",
-			"height":"200"
+			"height":"240",
+			"bkgalign":"top"
 	}],
 	"inventory":[{
-			"anchor":"topleft",
-			"size":"2",
+			"_anchor":"topleft",
+			"anchor":"bottomright",
+			"columns":"2",
+			"size":"24,24",
 			"blankicon":"icon5"
 	}],
 	"verbs":[{
-			"anchor":"topright",
-			"list":"look_at,use,talk_to",
-			"icons":"icon1,icon2,icon3"
+			"_anchor":"topright",
+			"anchor":"bottomleft",
+			"columns":"4",
+			"rows":"2",
+			"_list":"look_at,use,talk_to",
+			"_icons":"icon1,icon2,icon3",
+			"_list":"look_at,use,talk_to",
+			"list":"open,push,pick_up,look_at,use,close,pull,give,talk_to,walk_to",
+			"labels":"open,push,pick up,look at,use,close,pull,give,talk to,walk to",
+			"size":"40,20"
 	}],
 	"config":[{
 			"starting":"splash",

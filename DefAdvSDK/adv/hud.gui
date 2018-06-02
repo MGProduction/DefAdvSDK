@@ -192,6 +192,9 @@ nodes {
   size_mode: SIZE_MODE_AUTO
 }
 layers {
+  name: "above"
+}
+layers {
   name: "front"
 }
 layers {
