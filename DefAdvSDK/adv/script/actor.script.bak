@@ -28,8 +28,7 @@ end
 
 function update(self, dt)		
 	self.idle=false
-	if self.stop==true then
-	elseif self.destination then
+	if self.destination then
 		local opos=go.get_position()		
 		moving=false
 		self.position=go.get_position()		
@@ -151,7 +150,7 @@ function on_message(self, message_id, message, sender)
 			heroendmovement=false
 		end
 	elseif message_id==hash("look_at") then
-		if self.idle==true and self.stop~=true then
+		if self.idle==true then
 			local facing=self.facing
 			if self.position.x > message.lookat.x then
 				facing=1

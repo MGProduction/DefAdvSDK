@@ -20,10 +20,6 @@ end
 
 local M = {}
 
-M.WAITFORMOVEMENT=256
-M.WAITFORWAIT=0
-M.WAITFORTALK=1
-
 M.player=nil
 M.bkg=nil
 
@@ -146,7 +142,7 @@ function M.reach(self,val,dist)
 			end
 		end
 		msg.post(M.player, "move_to",{destination=pos,follow=true})			
-		M.waitfor=M.WAITFORMOVEMENT
+		M.waitfor=1
 	end		
 end
 
@@ -156,7 +152,6 @@ M.commands=nil
 M.commandspos=1
 
 M.conditional=nil
-M.conditionals=nil
 M.conditionalpos=0
 M.conditionalcheck=0	
 
@@ -166,8 +161,7 @@ M.waitfor=-1
 function M.setcommand(self,key,value,defvalue)
 	M.commands={}
 	M.commandspos=1
-	M.conditional=nil
-	M.conditionals=nil
+	M.conditional={}
 	M.conditionalpos=0
 	M.conditionalcheck=0
 	M.waittime=0
@@ -184,8 +178,7 @@ end
 function M.assigncommand(self,cmds)
 	M.commands=cmds
 	M.commandspos=1
-	M.conditional=nil
-	M.conditionals=nil
+	M.conditional={}
 	M.conditionalpos=0
 	M.conditionalcheck=0
 	M.waittime=0
@@ -221,8 +214,7 @@ function M.deletecommands(self)
 	end	
 	M.commands=nil
 	M.commandspos=1
-	M.conditional=nil
-	M.conditionals=nil
+	M.conditional={}
 	M.conditionalpos=0
 	M.conditionalcheck=0
 	M.waittime=0
@@ -237,12 +229,6 @@ function M.playaction(self,name)
 end
 
 function M.addcondition(self)
-	if M.conditionalpos>0 then
-		if M.conditionals==nil then
-			M.conditionals={}
-		end
-		M.conditionals[M.conditionalpos]=M.conditional
-	end
 	M.conditionalpos=M.conditionalpos+1
 	M.conditionalcheck=M.conditionalpos
 	M.conditional=0
@@ -279,8 +265,6 @@ function M.playcommands(self)
 						M.conditionalcheck=M.conditionalpos
 						if M.conditionalpos==0 then
 							M.conditional=nil
-						else
-							M.conditional=M.conditionals[M.conditionalpos]
 						end
 					else	
 						M.conditionalpos=M.conditionalpos-1
@@ -397,7 +381,7 @@ function M.playcommands(self)
 							local dig=split(val,",")
 							local pos = vmath.vector3(dig[1],screen_h-((dig[2]-herosize.y/2)),0)
 							msg.post(M.player, "move_to",{destination=pos,follow=true})			
-							M.waitfor=M.WAITFORMOVEMENT -- heroendmovement										
+							M.waitfor=1 -- heroendmovement										
 						elseif cmd=="loadroom" then									
 							M.jumpto=val							
 							M.unloadRoom(self)
@@ -418,16 +402,12 @@ function M.playcommands(self)
 								end
 							end
 						elseif cmd=="stop" then		
-							if M.tplayer and M.tplayer.name==val then
-								msg.post(M.player,"stop",{name=val})
-							else
-								for i,obj in ipairs(M.actors) do
-									if obj.name==val then
-										msg.post(obj.obj,"stop",{name=obj.name})
-										break
-									end
-								end	
-							end
+							for i,obj in ipairs(M.actors) do
+								if obj.name==val then
+									msg.post(obj.obj,"stop",{name=obj.name})
+									break
+								end
+							end	
 						elseif cmd=="select" then		
 							selected=M.getselectedfromname(self,val)							
 						elseif cmd=="setstartingpos" then
@@ -503,19 +483,19 @@ function M.playcommands(self)
 								end								
 							end
 						elseif cmd=="wait" then	
-							M.waitfor=M.WAITFORWAIT
+							M.waitfor=0
 							M.waittime=tonumber(val)/1000
 						elseif cmd=="saycolor" then	
 							msg.post("hud", "settextcolor",{color=val})					
 						elseif cmd=="say" then
 							msg.post(M.player,"lockanim",{anim="idle.front"})
 							msg.post("hud", "action.examine",{desc=val})					
-							M.waitfor=M.WAITFORTALK
+							M.waitfor=0
 							M.waittime=math.max(32,string.len(val))*0.045
 						elseif cmd=="declare" then
 							msg.post(M.player,"lockanim",{anim="idle.front"})
 							msg.post("hud", "action.examine",{desc=val})
-							M.waitfor=M.WAITFORTALK
+							M.waitfor=0
 							M.waittime=string.len(val)*0.5				
 						elseif cmd=="call" then
 							local act=M.theactions[val]
@@ -537,10 +517,6 @@ function M.playcommands(self)
 									M.commandspos=0
 									M.addcommands(self, act)
 								end
-							end
-						elseif cmd=="gane" then
-							if val=="new" then
-								M.reset(self)
 							end
 						else
 							print("unrecognized cmd: "..cmd.." "..val)
@@ -588,46 +564,6 @@ function M.getcmd(self,obj,action,kind)
 end
 
 -- Commands handling
-
-function M.reset(self)
-	M.visited={}
-	M.memory={}	
-	M.hudinventory={}
-	M.hudinventorycnt=0
-	M.myinventory={}	
-	M.lastroom=""
-	
-	for i = 1, M.inventory.count do
-		msg.post("hud", "hud_setinv",{num=i,val=0,img=M.inventory.blankicon})
-	end
-
-	local config
-
-	if sys.get_engine_info().is_debug then
-		config=M.game["debugconfig"]
-	else
-		config=M.game["config"]		
-	end
-
-	config=config[1]
-	
-	local baseinv=config["baseinventory"]
-	if baseinv then
-		local items=split(baseinv,",")	
-		for i, v in ipairs(items) do	
-			M.myinventory[v]=true	
-			M.addtoinventory(self,v)		
-		end
-	end
-
-	local baseset=config["baseset"]
-	if baseset then
-		local items=split(baseset,",")	
-		for i, v in ipairs(items) do		
-			M.memory[v]=true
-		end
-	end
-end
 
 function M.unloadGame(self)
 	audio.stopmusic(self)
@@ -1424,7 +1360,7 @@ function M.walkto(self,dest)
 	msg.post(M.player, "move_to",{destination=dest,sdestination=sdest,follow=true})			
 end
 
-function M.handle_onclick(self,action,right)
+function M.handle_onclick(self,action)
 	local sdest=nil
 	local dest=vmath.vector3()
 	local screen_height=tonumber(sys.get_config("display.height"))
@@ -1437,7 +1373,7 @@ function M.handle_onclick(self,action,right)
 
 	if M.commands then
 		if action.pressed == true then
-			if M.waitfor==M.WAITFORTALK or M.waitfor==M.WAITFORWAIT then
+			if M.waitfor==0 then
 				M.waittime=0
 			end
 		end
@@ -1453,9 +1389,6 @@ function M.handle_onclick(self,action,right)
 			
 		elseif action.pressed == true then			
 			local h
-			if right==true then
-				M.action="look at"
-			end
 			if M.player then
 				h=vmath.vector3(heropos.x, heropos.y-herosize.y/2,0)
 			else
@@ -1524,20 +1457,11 @@ end
 
 function M.update(self,dt)
 	if M.commands then
-		if M.waitfor == M.WAITFORMOVEMENT then
+		if M.waitfor == 1 then
 			if heroendmovement==true then
 				M.playcommands(self)
 			end
-		elseif M.waitfor == M.WAITFORWAIT then
-			if M.waittime>0 then
-				M.waittime=M.waittime-dt
-			end
-			if M.waittime<=0 then
-				M.waittime=0
-				M.waitfor=-1			
-				M.playcommands(self)				
-			end			
-		elseif M.waitfor == M.WAITFORTALK then
+		elseif M.waitfor == 0 then
 			if M.waittime>0 then
 				M.waittime=M.waittime-dt
 			end
@@ -1585,12 +1509,12 @@ function M.load(self,name)
 			M.myinventory=myfile["inventory"]
 			M.hudinventory=myfile["hudinventory"]
 			M.hudinventorycnt=myfile["hudinventorycnt"]			
-			for i = 1, M.inventory.count do
+			for i = 1, M.inventory.size do
 				if i<=M.hudinventorycnt then
 					local item=M.hudinventory[i]
 					msg.post("hud", "hud_setinv",{num=i,val=item["value"],img=item["icon"]})
 				else
-					msg.post("hud", "hud_setinv",{num=i,val=0,img=M.inventory.blankicon})
+					msg.post("hud", "hud_setinv",{num=i,val=0,img="icon5"})
 				end
 			end
 			M.reloadpos=myfile["playerpos"]
